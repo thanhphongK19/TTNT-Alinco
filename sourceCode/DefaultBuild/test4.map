@@ -1,0 +1,86 @@
+Renesas Optimizing Linker (W2.08.00 )             11-Aug-2022 10:58:01
+
+*** Options ***
+
+-subcommand=DefaultBuild\test4.clnk
+-library=DefaultBuild\test4.lib
+-input=DefaultBuild\dbsct.obj
+-input=DefaultBuild\intprg.obj
+-input=DefaultBuild\resetprg.obj
+-input=DefaultBuild\sbrk.obj
+-input=DefaultBuild\test4.obj
+-input=DefaultBuild\vecttbl.obj
+-input=DefaultBuild\ram.obj
+-input=DefaultBuild\table.obj
+-noprelink
+-output=DefaultBuild\test4.abs
+-list=DefaultBuild\test4.map
+-nooptimize
+-start=B_1,R_1,B_2,R_2,B,R,SU,SI/04,PResetPRG/0FFFC0000,C_1,C_2,C,C$DSEC,C$BSEC,C$INIT,C$VTBL,C$VECT,D_1,D_2,D,P,PIntPRG,W_1,W_2,W,L/0FFFC0100,FIXEDVECT/0FFFFFFD0
+-rom=D=R,D_1=R_1,D_2=R_2
+-nologo
+-end
+
+*** Error information ***
+
+*** Mapping List ***
+
+SECTION                            START      END         SIZE   ALIGN
+B_1
+                                  00000004  0000003b        38   1
+R_1
+                                  0000003c  000000a0        65   1
+B_2
+                                  000000a2  000000a5         4   2
+R_2
+                                  000000a6  000000a6         0   1
+B
+                                  000000a8  000004a7       400   4
+R
+                                  000004a8  000004ab         4   4
+SU
+                                  000004ac  000005ab       100   4
+SI
+                                  000005ac  000008ab       300   4
+PResetPRG
+                                  fffc0000  fffc0028        29   1
+C_1
+                                  fffc0100  fffc0112        13   1
+C_2
+                                  fffc0114  fffc0163        50   2
+C
+                                  fffc0164  fffc0197        34   4
+C$DSEC
+                                  fffc0198  fffc01bb        24   4
+C$BSEC
+                                  fffc01bc  fffc01d3        18   4
+C$INIT
+                                  fffc01d4  fffc01d4         0   1
+C$VTBL
+                                  fffc01d4  fffc01d4         0   1
+C$VECT
+                                  fffc01d4  fffc05d3       400   4
+D_1
+                                  fffc05d4  fffc0638        65   1
+D_2
+                                  fffc0639  fffc0639         0   1
+D
+                                  fffc063c  fffc063f         4   4
+P
+                                  fffc0640  fffc1d69      172a   1
+PIntPRG
+                                  fffc1d6a  fffc1e83       11a   1
+W_1
+                                  fffc1e84  fffc1e84         0   1
+W_2
+                                  fffc1e84  fffc1e84         0   1
+W
+                                  fffc1e84  fffc1e84         0   1
+L
+                                  fffc1e84  fffc1e84         0   1
+$ADDR_C_FFFFFF80
+                                  ffffff80  ffffff83         4   1
+$ADDR_C_FFFFFFA0
+                                  ffffffa0  ffffffaf        10   1
+FIXEDVECT
+                                  ffffffd0  ffffffff        30   4
