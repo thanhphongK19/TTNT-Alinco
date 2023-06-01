@@ -1,0 +1,721 @@
+/**********************************************************************************************************************
+ * DISCLAIMER
+ * This software is supplied by Renesas Electronics Corporation and is only intended for use with Renesas products. No
+ * other uses are authorized. This software is owned by Renesas Electronics Corporation and is protected under all
+ * applicable laws, including copyright laws.
+ * THIS SOFTWARE IS PROVIDED "AS IS" AND RENESAS MAKES NO WARRANTIES REGARDING
+ * THIS SOFTWARE, WHETHER EXPRESS, IMPLIED OR STATUTORY, INCLUDING BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. ALL SUCH WARRANTIES ARE EXPRESSLY DISCLAIMED. TO THE MAXIMUM
+ * EXTENT PERMITTED NOT PROHIBITED BY LAW, NEITHER RENESAS ELECTRONICS CORPORATION NOR ANY OF ITS AFFILIATED COMPANIES
+ * SHALL BE LIABLE FOR ANY DIRECT, INDIRECT, SPECIAL, INCIDENTAL OR CONSEQUENTIAL DAMAGES FOR ANY REASON RELATED TO
+ * THIS SOFTWARE, EVEN IF RENESAS OR ITS AFFILIATES HAVE BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
+ * Renesas reserves the right, without notice, to make changes to this software and to discontinue the availability of
+ * this software. By using this software, you agree to the additional terms and conditions found by accessing the
+ * following link:
+ * http://www.renesas.com/disclaimer
+ *
+ * Copyright (C) 2020 Renesas Electronics Corporation. All rights reserved.
+ *********************************************************************************************************************/
+/***********************************************************************/
+/*                                                                     */
+/*  FILE        :Main.c or Main.cpp                                    */
+/*  DATE        :Tue, Oct 31, 2006                                     */
+/*  DESCRIPTION :Main Program                                          */
+/*  CPU TYPE    :                                                      */
+/*                                                                     */
+/*  NOTE:THIS IS A TYPICAL EXAMPLE.                                    */
+/*                                                                     */
+/***********************************************************************/
+#include <machine.h>
+#include "iodefine.h"
+#include "main.h"
+#include "const_def.h"
+#include "port_def.h"
+#include "ram.h"
+#include "table.h"
+
+// Main routine
+void main(void)
+{
+	unsigned short i;
+	unsigned char dmy;
+    
+	/*OFF Protect Register*/
+    SYSTEM.PRCR.WORD = 0xA507;
+	
+#if 1// setting clock
+	set_psw(0x00000000);
+	
+
+	SYSTEM.SOSCCR.BYTE = 0x01;
+	while(SYSTEM.SOSCCR.BYTE != 0x01);
+	RTC.RCR3.BIT.RTCEN = 0;
+	for(i=0;i<3;i++){
+		dmy = RTC.RCR3.BIT.RTCEN;
+	}
+	while(RTC.RCR3.BIT.RTCEN != 0);
+	RTC.RCR1.BYTE &= 0xFA;			// Disable AIE & PIE
+    IEN(RTC,ALM) = 0;				// Disable Alarm interrupt
+    IR(RTC,ALM) = 0;
+    IEN(RTC,PRD) = 0;				// Disable Period interrupt
+    IR(RTC,PRD) = 0;
+	
+	/*** Clock　***/
+	SYSTEM.MOFCR.BYTE = 0x20;		// 10MHz~20MHz
+	SYSTEM.MOSCWTCR.BYTE = 0x07;	// wait time = 65536 （16.384ms）
+	SYSTEM.MOSCCR.BYTE = 0x00;		// Set the main clock to operating.
+	while(SYSTEM.OSCOVFSR.BIT.MOOVF != 1);	// wait MOOVF = 1
+	
+	/*** PLL  ***/
+	SYSTEM.PLLCR.WORD = 0x0B01;		// (14.7456 / 2) * 6 = 44.2368MHz
+	SYSTEM.PLLCR2.BYTE = 0x00;		// 
+	while (SYSTEM.OSCOVFSR.BIT.PLOVF != 1);	// PLL operating
+	
+	/*** DIV clock　***/
+	SYSTEM.SCKCR.LONG = 0x11000101;		// ICLK,PCLKD,PCLKB,FCLK 44.2368 / 2 = 22.1184MHz）
+	
+	
+	/*** PLL ***/
+	SYSTEM.SCKCR3.WORD = 0x0400;		// PLL
+#endif
+#if 1// CMT0 (Used as 10ms counter)
+	MSTP(CMT0) = 0;					// Enable CMT0
+	CMT0.CMCR.BIT.CMIE = 0;
+	CMT.CMSTR0.BIT.STR0 = 0;		// Stop CMT0
+	CMT0.CMCR.BIT.CKS = 1;			// 22.1184MHz / 32 = 691.200kHz
+	CMT0.CMCOR = 6912 - 1;			// 691.200kHz / 6912 = 100Hz
+	CMT0.CMCR.BIT.CMIE = 1;
+	CMT0.CMCNT = 0;
+	IR(CMT0,CMI0) = 0;              // flag timer
+	IPR(CMT0,CMI0) = 0x01;          // Interupt priority
+	//IEN(CMT0,CMI0) = 1;           // Enable Interupt
+	CMT.CMSTR0.BIT.STR0 = 1;		// Start CMT0
+#endif	
+#if 1// setting Port
+	PORTA.PDR.BIT.B0 = 1;   // PA0      Output
+	PORTA.PMR.BIT.B0 = 0;
+	PORTJ.PDR.BIT.B0 = 1;   // v2.0L
+	PORTJ.PMR.BIT.B0 = 0;
+	PORT0.PDR.BIT.B4 = 1;   // led sw
+	PORT0.PMR.BIT.B4 = 0;
+	PORT5.PDR.BIT.B3 = 1;   // P53      Output
+	PORT5.PMR.BIT.B3 = 0;
+	PORT1.PDR.BIT.B0 = 1;   // P10      Output
+	PORT1.PMR.BIT.B0 = 0;
+	PORT1.PDR.BIT.B1 = 1;   // P11      Output
+	PORT1.PMR.BIT.B1 = 0;
+	PORT1.PMR.BIT.B7 = 0;   // LX _GAIN
+	PORT1.PDR.BIT.B7 = 1;
+	
+	PORTF.PDR.BIT.B7 = 1;   // PF7      Output RESET LED
+	PORTF.PMR.BIT.B7 = 0;
+	
+	PORTC.PDR.BIT.B0 = 0;  	// SW2      Input
+	PORTC.PDR.BIT.B1 = 0; 	// SW1
+	PORTB.PDR.BIT.B7 = 0;  	// SW3
+	PORTB.PDR.BIT.B6 = 0;  	// SW4
+  
+	PORTC.PMR.BIT.B0 = 0;  	// SW2
+	PORTC.PMR.BIT.B1 = 0; 	// SW1
+	PORTB.PMR.BIT.B7 = 0;  	// SW3
+	PORTB.PMR.BIT.B6 = 0;   // SW4
+	
+	
+	PORTJ.PODR.BIT.B0 = 0 ;  // source V2.0 
+    PORT0.PODR.BIT.B4 = 0 ;
+	PORTF.PODR.BIT.B7 = 0 ;
+	PORTF.PODR.BIT.B7 = 1 ; //Reset LED 
+	//PORT1.PODR.BIT.B7 = 0 ; //LX GAIN 
+#endif
+#if 0// config RIIC
+    RIIC0.ICCR1.BIT.ICE = 0;  //disable I2C
+	RIIC0.ICCR1.BIT.IICRST = 1;  //RIIC reset
+	RIIC0.SARU0.BYTE = 0x00;  // 7 Bits address
+	RIIC0.SARL0.BYTE = 0x41;  //ADDRESS SLAVE 
+	RIIC0.ICSER.BIT.SAR0E = 1;  //enable Slave address 0
+	RIIC0.ICMR1.BIT.MTWP  = 1;  //ENABLE WRITTING TO THE ICCR2.MST and TRS BIT
+	RIIC0.ICMR1.BIT.CKS   = 0x000b; // PCLK/1
+	RIIC0.ICBRL.BYTE    = 0xF9U;   // 400 kbps 
+	RIIC0.ICBRH.BYTE    = 0xEBU;    
+	RIIC0.ICMR2.BIT.TMWE = 1;
+	RIIC0.ICMR3.BIT.ACKWP = 0;  // disable ACKBT Write Protect
+	RIIC0.ICMR3.BIT.WAIT = 1;   // WAIT
+	RIIC0.TMOCNTL.BYTE = 0x00;
+	RIIC0.TMOCNTU.BYTE = 0x00;
+	RIIC0.ICFER.BIT.TMOE = 1;
+	
+	
+	
+    /* Set SSCL0 pin */
+    MPC.P11PFS.BYTE = 0x0AU;
+    PORT1.PMR.BYTE |= 0x02U;
+
+    /* Set SSDA0 pin */
+    MPC.P10PFS.BYTE = 0x0AU;
+    PORT1.PMR.BYTE |= 0x01U; 
+    
+    
+#endif
+
+
+	/*** ON protect ***/
+	SYSTEM.PRCR.WORD = 0xA500;
+	//WDT_SET   watchdog timer
+    init_I2C();
+	for(i=0;i<5;i++){
+		while(IR(CMT0,CMI0) == 0);  //wait flag compare timer
+		IR(CMT0,CMI0) = 0;			// reset flag timer
+	}
+	setLed7Output();
+	initLed7();
+	// Main loop (10ms)
+	//operate();
+	glCount10Ms = 100;
+	while(1){   
+		while(IR(CMT0,CMI0) == 0);  //wait flag compare timer
+		IR(CMT0,CMI0) = 0;			// reset flag timer
+		timeCount();
+		getAllSwitchStatus();
+	    //operate();
+		setLed7();
+	}
+}
+
+void operate()
+{
+	takeLed7Character(Led7seg_2,glLed7Dis[1]);    //led2
+	takeLed7Character(Led7seg_1,glLed7Dis[0]);    //led1
+	takeLed7Character(Led7seg_4,glLed7Dis[3]);    //led4
+    takeLed7Character(Led7seg_3,glLed7Dis[2]);    //led3
+	glLed7Data[0] = LED1;
+	glLed7Data[1] = LED2;
+	glLed7Data[2] = LED3;
+	glLed7Data[3] = LED4;
+    setAllLed7(); 
+    waitNsec(1);  //1ss
+	counterLed7();
+}
+
+
+
+/* Tranmitter and recevier I2C */
+/* init I2C */
+void init_I2C()
+{
+	SCL = 0;
+	SDA_WR = 0;     //SDA output data = 0
+	SDA_DIR = 0;
+	SCL_DIR = 0;
+}
+
+/* Start Condition I2C */
+void startCondition()
+{
+	SDA_DIR = 0;      //SDA = 1
+	SCL_DIR = 0;
+	SDA_DIR = 1;
+	waitNmc(5);
+}
+
+/* Stop condition I2C */
+void stopCondition()
+{
+	SCL_DIR = 1;     //SCL output = 0 always
+	SDA_DIR = 1;     //SDA output = 0 always
+	waitNmc(5);
+	SCL_DIR = 0;
+	SDA_DIR = 0;
+	waitNmc(5);
+}
+
+/* Write bus I2C */
+unsigned char writeI2C(unsigned char data)
+{
+	unsigned char timeout;
+	unsigned char dmy;
+	unsigned char pos;
+	
+	pos = 0x80;
+	while(pos){
+		SCL_DIR = 1;
+		waitNmc(5);
+		if(pos & data){
+			SDA_DIR = 0;
+		}
+		else{
+			SDA_DIR = 1;
+		}
+		SCL_DIR = 0;
+		waitNmc(5);
+		pos = pos >> 1;
+	}
+	
+	// Wait for ACK
+	SCL_DIR = 1;
+	SDA_DIR = 0;
+	waitNmc(5);
+	SCL_DIR = 0;
+	timeout = 100;
+	while(SDA_RD && --timeout);
+	if(SDA_RD){
+		dmy = 0;
+	}
+	else{
+		dmy = 1;
+	}	
+	
+	return dmy;
+}
+
+
+
+
+// Set LED7 output
+unsigned char setLed7Output()
+{
+	unsigned char addr;
+	unsigned char data;
+	unsigned char cmd;
+	unsigned char flg;
+	
+	// Issue a start condition
+	startCondition();
+	
+	// Set Port 0 and Port 1 of IC7002 to output port
+	addr = I2C_ADDR_TCA6416AR_L;
+	flg = writeI2C(addr);
+	if(flg == 0){
+		goto END;
+	}
+	
+	cmd = TCA6416A_CONFIG_PORT_0;
+	flg = writeI2C(cmd);
+	if(flg == 0){
+		goto END;
+	}
+	
+	data = 0;
+	flg = writeI2C(data);	// PORT 0
+	if(flg == 0){
+		goto END;
+	}
+	
+	flg = writeI2C(data);	// PORT 1
+	if(flg == 0){
+		goto END;
+	}
+	
+	// Issue a stop condition
+	stopCondition();
+	
+	waitNmc(100);
+#if 1	
+	// Issue a start condition
+	startCondition();
+	
+	// Set Port 0 and Port 1 of IC7003 to output port
+	addr = I2C_ADDR_TCA6416AR_H;
+	flg = writeI2C(addr);
+	if(flg == 0){
+		goto END;
+	}
+	
+	cmd = TCA6416A_CONFIG_PORT_0;
+	flg = writeI2C(cmd);
+	if(flg == 0){
+		goto END;
+	}
+	
+	data = 0;
+	flg = writeI2C(data);	// PORT 0
+	if(flg == 0){
+		goto END;
+	}
+	
+	flg = writeI2C(data);	// PORT 1
+	if(flg == 0){
+		goto END;
+	}
+#endif
+	
+END:
+	// Issue a stop condition
+	stopCondition();
+	
+	return flg;
+}	
+
+/* Set Single Led 7 segment */
+void setSingleLed7(unsigned char index, unsigned char data)
+{
+	unsigned char addr;
+	unsigned char cmd;
+	unsigned char flg;
+	
+	// Issue a start condition
+	startCondition();
+	
+	// Write Address byte
+	if(index < 2){
+		addr = I2C_ADDR_TCA6416AR_H;
+	}
+	else{
+		addr = I2C_ADDR_TCA6416AR_L;	
+	}
+	flg = writeI2C(addr);
+	if(flg == 0){
+		goto END;
+	}
+	
+	// Write command byte
+	if(index % 2){
+		cmd = TCA6416A_OUTPUT_PORT_0;
+	}
+	else{
+		cmd = TCA6416A_OUTPUT_PORT_1;
+	}
+	flg = writeI2C(cmd);
+	if(flg == 0){
+		goto END;
+	}
+	
+	// Write data byte
+	flg = writeI2C(data);
+	if(flg == 0){
+		goto END;
+	}
+	
+END:
+	// Issue a stop condition
+	stopCondition();
+}
+
+/* Set all Led 7 segment */
+void setAllLed7()
+{      
+	//setSingleLed7(Led7seg_1,glLed7Data[0]);  //Led 1
+	//setSingleLed7(Led7seg_2,glLed7Data[1]);  //Led 2
+	//setSingleLed7(Led7seg_3,glLed7Data[2]);  //Led 3
+	//setSingleLed7(Led7seg_4,glLed7Data[3]);  //Led 4
+	setSingleLed7(Led7seg_1,extGpioPort.P0.BYTE);
+	setSingleLed7(Led7seg_2,extGpioPort.P1.BYTE);
+	setSingleLed7(Led7seg_3,extGpioPort.P2.BYTE);
+	setSingleLed7(Led7seg_4,extGpioPort.P3.BYTE);
+    setLed7Output();
+}
+
+
+
+/* Counting Led 0000 - 9999 */
+// Set LED7 segment
+void setLed7()
+{
+	unsigned short data;
+	unsigned char dmy;
+	unsigned char i;
+	
+	// Get display value
+	if(led7DispMode == 1){
+		
+	}
+	data = glCount1Sec;
+	if(data > 999){	// 1xxx
+		dmy = (char)((data - (data % 1000)) / 1000);
+	}
+	else{
+		dmy = 0;
+	}
+	glLed7Data[3] = dmy;
+	data = data % 1000;// xxx
+	if(data > 99){	// 1xx
+		dmy = (char)((data - (data % 100)) / 100);
+	}
+	else{
+		dmy = 0;
+	}
+	glLed7Data[2] = dmy;
+	data = data % 100;// xx
+	if(data > 9){	// 1x
+		dmy = (char)((data - (data % 10)) / 10);
+	}
+	else{
+		dmy = 0;
+	}
+	glLed7Data[1] = dmy;
+	data = data % 10;// x
+	glLed7Data[0] = (char)(data);
+	
+	// Get LED7 charactor
+	for(i=0;i<4;i++){
+		glLed7Dis[i] = led7CharacterTable1[glLed7Data[i]];
+	}
+	
+	// Put display data into bit access structure array
+	led7DispData.P0.BYTE = glLed7Dis[0];
+	led7DispData.P1.BYTE = glLed7Dis[1];
+	led7DispData.P2.BYTE = glLed7Dis[2];
+	led7DispData.P3.BYTE = glLed7Dis[3];
+	
+	// Re-assign GPIO ports to LED7 segments
+	//extGpioPort.P0.BIT.B0 = led7DispData.P
+	
+	// Set all LED7 (Write data to external GPIO driver)
+	setAllLed7();
+}
+
+/* Init Led 7 segment */
+void initLed7()
+{
+	glLed7Dis[0] = 0;
+	glLed7Dis[1] = 0;
+	glLed7Dis[2] = 0;
+	glLed7Dis[3] = 0;
+	
+}
+
+/* take led 7 character */
+void takeLed7Character (unsigned char index,unsigned char data)
+{   
+        
+		if(index == 1){      // led 2
+			LED2_Dp = logicAnd(led7CharacterTable1[data],0x80);
+		    LED2_G  = logicAnd(led7CharacterTable1[data],0x40); 
+		    LED2_F  = logicAnd(led7CharacterTable1[data],0x20);
+			LED2_E  = logicAnd(led7CharacterTable1[data],0x10);
+			LED2_D  = logicAnd(led7CharacterTable1[data],0x08);
+		    LED2_C  = logicAnd(led7CharacterTable1[data],0x04);
+			LED2_B  = logicAnd(led7CharacterTable1[data],0x02);
+			LED2_A  = logicAnd(led7CharacterTable1[data],0x01);
+        }
+        else if(index == 3){      // led 4
+			LED4_Dp = logicAnd(led7CharacterTable1[data],0x80);
+		    LED4_G  = logicAnd(led7CharacterTable1[data],0x40); 
+		    LED4_F  = logicAnd(led7CharacterTable1[data],0x20);
+			LED4_E  = logicAnd(led7CharacterTable1[data],0x10);
+			LED4_D  = logicAnd(led7CharacterTable1[data],0x08);
+		    LED4_C  = logicAnd(led7CharacterTable1[data],0x04);
+			LED4_B  = logicAnd(led7CharacterTable1[data],0x02);
+			LED4_A  = logicAnd(led7CharacterTable1[data],0x01);
+		}		
+		else if(index == 0 ) {    // led 1
+		    LED1_Dp = logicAnd(led7CharacterTable1[data],0x80);
+		    LED1_G  = logicAnd(led7CharacterTable1[data],0x40); 
+		    LED1_F  = logicAnd(led7CharacterTable1[data],0x20);
+			LED1_E  = logicAnd(led7CharacterTable1[data],0x10);
+			LED1_D  = logicAnd(led7CharacterTable1[data],0x08);
+		    LED1_C  = logicAnd(led7CharacterTable1[data],0x04);
+			LED1_B  = logicAnd(led7CharacterTable1[data],0x02);
+			LED1_A  = logicAnd(led7CharacterTable1[data],0x01);
+		}
+		else if(index == 2){      // led 3
+			LED3_Dp = logicAnd(led7CharacterTable1[data],0x80);
+		    LED3_G  = logicAnd(led7CharacterTable1[data],0x40); 
+		    LED3_F  = logicAnd(led7CharacterTable1[data],0x20);
+			LED3_E  = logicAnd(led7CharacterTable1[data],0x10);
+			LED3_D  = logicAnd(led7CharacterTable1[data],0x08);
+		    LED3_C  = logicAnd(led7CharacterTable1[data],0x04);
+			LED3_B  = logicAnd(led7CharacterTable1[data],0x02);
+			LED3_A  = logicAnd(led7CharacterTable1[data],0x01);
+		}
+        			
+}	
+
+/* And logic */
+unsigned char logicAnd(unsigned char data,unsigned char pos)
+{
+	if(data & pos){
+		data = 1;
+	}
+	else{
+		data = 0;
+	}
+	return data;
+}
+
+/* Function counter Led 7 segment */
+void counterLed7()
+{
+	if((++glLed7Dis[0])>9){
+		glLed7Dis[0] = 0;
+		if((++glLed7Dis[1])>9){
+			glLed7Dis[1] = 0;
+			if((++glLed7Dis[2])>9){
+				glLed7Dis[2] = 0;
+				if((++glLed7Dis[3])>9){
+					glLed7Dis[3] = 0;
+				}
+				else{
+					goto OUT;
+				}
+			}
+			else{
+				goto OUT;
+			}
+		}
+		else{
+			goto OUT;
+		}
+	}	
+OUT:	
+}
+ 
+	
+	
+	
+	
+/* Switch check and proccess */
+// Get status of all switches
+void getAllSwitchStatus()
+{
+	getSwitchStatus(S_SW1,SW1);
+	getSwitchStatus(S_SW2,SW2);
+	getSwitchStatus(S_SW3,SW3);
+	getSwitchStatus(S_SW4,SW4);
+}
+
+// Get status of single switch
+void getSwitchStatus(unsigned char Index, unsigned char Value)
+{
+	glSwFlag[Index] = 0;
+	if(Value == 0){		// Switch ON
+		if(glSwBak[Index] == 0){
+			glSwBak[Index] = 1;
+		}
+		else{
+			if(glSw[Index] == 0){
+				glSw[Index] = 1;
+				glSwFlag[Index] = 1;
+			}
+		}
+	}
+	else{				// Switch OFF
+		if(glSwBak[Index] == 1){
+			glSwBak[Index] = 0;
+		}
+		else{
+			if(glSw[Index] == 1){   
+				glSw[Index] = 0;
+				glSwFlag[Index] = 1;
+			}
+		}
+	}
+}
+
+// Get long press status of all switches
+void getAllSwitchLongPressStatus()
+{
+	getSwitchLongPressStatus(S_SW1);
+	getSwitchLongPressStatus(S_SW2);
+	getSwitchLongPressStatus(S_SW3);
+	getSwitchLongPressStatus(S_SW4);
+}
+
+// Get long press status of single switch
+void getSwitchLongPressStatus(unsigned char Index)
+{
+	glSwLongPressFlag[Index] = 0;
+	
+	if(glSwFlag[Index]){
+		if(glSw[Index] == 1){
+			glSwLongPressTimer[Index] = 100;
+			glSwLongPressOn[Index] = 0;
+		}
+	}
+	
+	if(glSw[Index] == 1){
+		if(glSwLongPressOn[Index] == 0){
+			if(glSwLongPressTimer[Index]){
+				glSwLongPressTimer[Index]--;
+				if(glSwLongPressTimer[Index] == 0){
+					glSwLongPressOn[Index] = 1;
+					glSwLongPressFlag[Index] = 1;
+				}
+			}
+		}
+	}
+	else{
+		glSwLongPressTimer[Index] = 0;
+		glSwLongPressOn[Index] = 0;
+	}
+}
+
+/* Set LEDs */
+// Set all LEDs
+void setAllLeds()
+{
+	//LED_W = setSingleLed(L_LED_W);
+}
+
+// Set output of single LED
+unsigned char setSingleLed(unsigned char Index)
+{
+	unsigned char dmy;
+	
+	if(glLed[Index]){
+		dmy = 1;
+	}
+	else{
+		dmy = 0;
+	}
+	
+	return dmy;
+}
+
+
+
+
+// Timer //
+// Time counter
+void timeCount()
+{
+	if(glCount10Ms){
+		glCount10Ms--;
+		if(glCount10Ms == 0){
+			glCount1Sec++;
+			if(glCount1Sec > 9999){
+				glCount1Sec = 0;
+			}
+			glCount10Ms = 100;
+		}
+	}
+}
+
+/* Wait MC */
+void waitNmc (unsigned char interval)
+{
+	while(interval > 0){
+	   nop();
+	   interval--;
+	}
+}
+
+/* Wait ms */
+void waitN10ms (unsigned char interval)
+{
+	while(interval > 0)
+	{
+	while(IR(CMT0,CMI0) == 0);  //wait flag compare timer
+    IR(CMT0,CMI0) = 0;			// reset flag timer
+	interval --;
+	}
+}
+
+/* wait second */
+void waitNsec (unsigned char interval)
+{  
+	unsigned char loop;
+	loop = 100;
+	while(interval){
+		while(loop > 0){
+			while(IR(CMT0,CMI0) == 0);  //wait flag compare timer
+			IR(CMT0,CMI0) = 0;			// reset flag timer
+			loop --;
+		}
+		interval --;
+	}
+}
+
+
+
+
+

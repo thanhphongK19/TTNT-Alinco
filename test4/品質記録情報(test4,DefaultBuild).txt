@@ -1,0 +1,260 @@
+品質記録情報
+2022年7月21日 10:58:51
+
+------ ビルド開始(test4, DefaultBuild) ------
+C:\Program Files (x86)\Renesas Electronics\CS+\CC\CC-RX\V2.08.01\Bin\ccrx.exe test4.c -isa=rxv1 -nofpu -lang=c -include=. -output=obj=DefaultBuild\test4.obj -debug -optimize=0 -nologo -exec_time=C:\Users\Administrator\AppData\Local\Temp\CSPlusBuildTool_e79d8f1eed2c4ef59ab96d45fce638e8g4foigth.3cc
+test4.c(41):W0520550:Variable "dmy" was set but never used
+C:\Program Files (x86)\Renesas Electronics\CS+\CC\CC-RX\V2.08.01\Bin\rlink.exe -subcommand=DefaultBuild\test4.clnk
+Renesas Optimizing Linker Completed
+------ ビルド終了(エラー:0個, 警告:1個)(test4, DefaultBuild) ------
+
+--- CommandFile 1 ---
+DefaultBuild\test4.clnk :
+-library=DefaultBuild\test4.lib
+-input=DefaultBuild\dbsct.obj
+-input=DefaultBuild\intprg.obj
+-input=DefaultBuild\resetprg.obj
+-input=DefaultBuild\sbrk.obj
+-input=DefaultBuild\test4.obj
+-input=DefaultBuild\vecttbl.obj
+-input=DefaultBuild\ram.obj
+-input=DefaultBuild\table.obj
+-noprelink
+-output=DefaultBuild\test4.abs
+-list=DefaultBuild\test4.map
+-nooptimize
+-start=B_1,R_1,B_2,R_2,B,R,SU,SI/04,PResetPRG/0FFFC0000,C_1,C_2,C,C$DSEC,C$BSEC,C$INIT,C$VTBL,C$VECT,D_1,D_2,D,P,PIntPRG,W_1,W_2,W,L/0FFFC0100,FIXEDVECT/0FFFFFFD0
+-rom=D=R,D_1=R_1,D_2=R_2
+-nologo
+-end
+-input=DefaultBuild\test4.abs
+-output=DefaultBuild\test4.mot
+-form=stype
+-exit
+
+
+--- SHA1 hash value of output files ---
+D:\nhut\001_CS_project\Interm\test4\DefaultBuild\test4.abs: 8d4da434bd563fd320f8efa02f1633c5d1190ad9
+D:\nhut\001_CS_project\Interm\test4\DefaultBuild\test4.mot: 0c69c51b6a8ea26fa09f5d3fe1eee8c557210506
+
+
+--- システム情報 ---
+*OS バージョン
+ Microsoft Windows 10 Pro (-, 10.0.19043, WOW64)
+*言語
+ 日本語 (日本)
+*.NET Framework バージョン
+ Microsoft .NET Framework 4 [.NET 4.6 or later] (4.0.30319.42000)
+
+--- アプリケーション情報 ---
+*製品名
+ CS+ for CC
+*パッケージ・バージョン
+ V8.07.00  [01 Dec 2021]
+*バージョン
+ V9.07.00.06 [15 Nov 2021]
+*アセンブリ・バージョン
+ 3.12.10.1
+*拠点情報
+ Japan
+*製品ライセンス
+ Compiler Standard V2 for RX (CC-RX) ノードロック・ライセンス(permanent); 
+*実行場所
+ C:\Program Files (x86)\Renesas Electronics\CS+\CC
+*メモリ使用量
+ *プライベート・ワーキング・セット
+  368 MB
+ *GDIオブジェクト数
+  2334
+ *USERオブジェクト数
+  1435
+ *開いているファイル
+  1 editors, 1 files, 15 KB
+
+--- ビルド・ツール・プラグイン情報 ---
+RH850ビルド・ツールCC-RH用プラグイン
+ *バージョン
+  V8.02.00.00 [25 Mar 2019]
+ *アセンブリ・バージョン
+  1.1.10.12
+ *DLL ファイル名
+  BuildToolCCRH.dll
+RL78ビルド・ツールCC-RL用プラグイン
+ *バージョン
+  V8.05.00.00 [08 Oct 2020]
+ *アセンブリ・バージョン
+  1.0.0.0
+ *DLL ファイル名
+  BuildToolCCRL.dll
+RXビルド・ツールCC-RX用プラグイン
+ *バージョン
+  V8.02.00.00 [25 Mar 2019]
+ *アセンブリ・バージョン
+  3.12.10.1
+ *DLL ファイル名
+  BuildToolCCRX.dll
+RH850ビルド・ツールGHS CCRH850用プラグイン
+ *バージョン
+  V1.05.00.00 [08 Oct 2020]
+ *アセンブリ・バージョン
+  1.0.0.0
+ *DLL ファイル名
+  BuildToolGHSCCRH850.dll
+
+--- デバッグ・ツール・プラグイン情報 ---
+デバッガ・コレクション・プラグイン
+ *バージョン
+  V8.07.00.05 [01 Dec 2021]
+ *アセンブリ・バージョン
+  2.12.10.1
+ *DLL ファイル名
+  DebugToolCollection.dll
+
+--- その他のプラグイン情報 ---
+RH850用コード生成
+ *バージョン
+  V1.02.02.05 [25 May 2018]
+ *アセンブリ・バージョン
+  1.0.0.0
+ *DLL ファイル名
+  CodeGeneratorRH850.dll
+コード生成プラグイン
+ *バージョン
+  V4.08.05.01 [14 Aug 2020]
+ *アセンブリ・バージョン
+  3.0.0.0
+ *DLL ファイル名
+  CodePart.dll
+コード生成／端子図プラグイン
+ *バージョン
+  V2.10.07.02 [08 Nov 2021]
+ *アセンブリ・バージョン
+  1.0.0.0
+ *DLL ファイル名
+  CodePart2.dll
+デバッグ・コンソール・プラグイン
+ *バージョン
+  V7.00.00.01 [06 Apr 2018]
+ *アセンブリ・バージョン
+  7.0.0.0
+ *DLL ファイル名
+  DebugConsole.dll
+Quick and Effective tool solution - QE
+ *バージョン
+  V9.06.00.04 [25 May 2021]
+ *アセンブリ・バージョン
+  1.15.10.16
+ *DLL ファイル名
+  InCarTools.dll
+端子配置プラグイン
+ *バージョン
+  V1.54.01.01 [31 Jul 2014]
+ *アセンブリ・バージョン
+  1.6.10.23
+ *DLL ファイル名
+  PinConfig.dll
+プログラム解析プラグイン
+ *バージョン
+  V4.12.00.01 [14 Apr 2021]
+ *アセンブリ・バージョン
+  3.12.11.9
+ *DLL ファイル名
+  ProgramAnalyzer.dll
+IronPythonコンソール・プラグイン
+ *バージョン
+  V1.43.00.02 [29 Oct 2021]
+ *アセンブリ・バージョン
+  1.6.10.23
+ *DLL ファイル名
+  PythonConsole.dll
+エディタ・パネル
+ *バージョン
+  V1.17.00.01 [15 Oct 2020]
+ *アセンブリ・バージョン
+  1.1.0.0
+ *DLL ファイル名
+  SEditor.dll
+スタック見積もりツール
+ *バージョン
+  V1.05.00.02 [30 Jul 2014]
+ *アセンブリ・バージョン
+  1.30.11.15
+ *DLL ファイル名
+  Stk.dll
+アップデート・マネージャ・プラグイン
+ *バージョン
+  V2.03.00.02 [29 Oct 2018]
+ *アセンブリ・バージョン
+  1.13.6.20
+ *DLL ファイル名
+  Update.dll
+
+デバッグ・ツール共通インタフェース
+ *バージョン
+  V8.07.00.05 [01 Dec 2021]
+ *アセンブリ・バージョン
+  3.12.10.1
+ *DLL ファイル名
+  CommonDebuggerInterface.dll
+デバイス情報共通インタフェース
+ *バージョン
+  V9.07.00.01 [14 Oct 2021]
+ *アセンブリ・バージョン
+  3.0.0.0
+ *DLL ファイル名
+  DeviceInformation.dll
+
+--- メイン・プロジェクト情報 ---
+D:\nhut\001_CS_project\Interm\test4\test4.mtpj
+マイクロコントローラ情報
+ *R5F51136AxFP
+  *ファイル名: バージョン
+   RX_Productlist.xml: V3.080000
+   R5F51136AxFP_common.xml: V3.08.00
+   -: -
+   -: -
+   RX113.ddi: 1.00F
+  
+
+ビルド・ツール情報
+ *CC-RX
+   * プラグイン(*.dll)のバージョン
+     V8.07.00.03 [11 Nov 2021]
+   * コンパイラ・パッケージのバージョン
+     V2.08.01
+  
+
+デバッグ・ツール情報
+ *RX E1(Serial)
+  Debugger Library V8.07.00.05 [01 Dec 2021]
+  FFWE20RX600.dll 2.11.00.003
+  BfwE20rx600.s
+   LEVEL0 1.00.00.000
+   LEVEL1 2.11.00.001
+  Communi.dll 3.02.00.000
+  FPGA 07
+   Communication FPGA 08
+  
+
+その他のツール情報
+ *なし
+
+ *なし
+
+ *コード生成
+ *なし
+
+ *プログラム解析
+  *バージョン
+   V4.12.00.01 [14 Apr 2021]
+
+ *なし
+
+その他の情報
+ *RX113コードライブラリ
+  *バージョン
+   V1.03.02.04 [18 May 2018]
+  *説明
+   RX113コード生成プラグインのためのコードライブラリです。
+
+

@@ -1,0 +1,51 @@
+
+void main(void);
+
+void operate();
+
+
+/* Tranmitter and recevier I2C */
+void init_I2C();
+void startCondition();
+void stopCondition();
+unsigned char writeI2C(unsigned char data);
+
+
+/* Set LED7 output */
+// Setting Led //
+unsigned char setLed7Output();
+void setSingleLed7(unsigned char index, unsigned char data);
+void setAllLed7();
+
+
+/* Counting Led 0000 - 9999 */
+// Set LED7 segment
+void setLed7()
+void initLed7();
+void takeLed7Character (unsigned char index,unsigned char data);
+unsigned char logicAnd(unsigned char data,unsigned char pos);
+void counterLed7();
+ 
+
+/* Switch check and proccess */
+void getAllSwitchStatus();
+void getSwitchStatus(unsigned char Index, unsigned char Value);
+void getAllSwitchLongPressStatus();
+void getSwitchLongPressStatus(unsigned char Index);
+
+/* Set LEDs */
+void setAllLeds();
+unsigned char setSingleLed(unsigned char Index);
+
+
+// Timer //
+// Time counter
+void timeCount();
+void waitNmc(unsigned char interval);
+void waitN10ms(unsigned char interval);
+void waitNsec(unsigned char interval);
+
+
+
+
+
