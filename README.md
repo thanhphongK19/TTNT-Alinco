@@ -1,8 +1,8 @@
 # Internship Alinco ELECTRONIC VIETNAM
 
 ## Intership content
-Microcontroller: RX113 - Starter kit - Renesas
-Language: C
+### Microcontroller: RX113 - Starter kit - Renesas
+### Language: C 
 
 ### Config system clock
 ### Button
