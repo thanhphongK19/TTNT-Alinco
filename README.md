@@ -6,11 +6,11 @@
 ### embedded firmware
 
 
-### Config system clock
-### Button
-### Control Led 7 segment
-### Digital Analog Convert
-### Read/Write Flash memory
-### CRC CHECK SUM
-### i2C Protocol
-### Radio AM/FM
+#### 1. Config system clock
+#### 2. Button
+#### 3. Control Led 7 segment
+#### 4. Digital Analog Convert
+#### 5. Read/Write Flash memory
+#### 6. CRC CHECK SUM
+#### 7. i2C Protocol
+#### 8. Radio AM/FM
